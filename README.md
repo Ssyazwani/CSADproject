@@ -21,16 +21,16 @@ Allows residents to book the facilities and management to manage the facilities 
      - By date and time (calendar view)
 
    - Login to view their own bookings:
-      -  Username
+      -  Username (Email) 
       -  Password
       -  Unit Number
-      -  Contact Number
+   
 
    -  Bookings are made by residents so it can be saved in system:
       -  Name 
       - Email
       - Contact Number
-      -  Unit Number
+      - Unit Number
       - When they want to use the facilities (Time)
       - When they want to use the facilities (Date)
       - What facilities they want to use
@@ -40,7 +40,7 @@ Allows residents to book the facilities and management to manage the facilities 
 
    - Login to manage bookings
       -  User ID
-      - Password (Protected/ 12 chars with special char)
+      - Password (Protected)
 
    - Able to view the current booking status
      - Able to see who book (when,which date and what facilities)
