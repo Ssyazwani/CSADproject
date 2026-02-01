@@ -3,35 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <title>Create Booking</title>
+
   <style>
     table {
       border-collapse: collapse;
       width: 100%;
+      margin-top: 20px;
     }
     th, td {
-      border: 1px solid #aaa;
+      border: 1px solid #444;
+      padding: 8px;
       text-align: center;
-      padding: 6px;
+    }
+    th {
+      background-color: #f2f2f2;
     }
     .slot {
       cursor: pointer;
     }
-    .slot.disabled {
-      background: #ddd;
-      pointer-events: none;
-    }
     .slot.selected {
-      background: lightgreen;
+      background-color: #4caf50;
+      color: white;
+    }
+    .slot.disabled {
+      background-color: #ccc;
+      color: red;
+      cursor: not-allowed;
     }
   </style>
 </head>
 
 <body>
 
+<h2>New Booking</h2>
+
 <form action="/createBooking" method="POST">
 
   <label>Facility:</label>
-  <select id="facility">
+  <select id="facility" required>
     <option value="">-- Select Facility --</option>
     <option value="Tennis Court">Tennis Court</option>
     <option value="Basketball Court">Basketball Court</option>
@@ -41,8 +50,8 @@
 
   <br><br>
 
-  <label>Booking Date:</label>
-  <input type="date" id="event-date" min="2026-01-01" max="2026-12-31">
+  <label>Date:</label>
+  <input type="date" id="event-date" min="2026-01-01" max="2026-12-31" required>
 
   <!-- Hidden fields sent to backend -->
   <input type="hidden" name="selectedFacility" id="selectedFacility">
@@ -50,105 +59,107 @@
   <input type="hidden" name="selectedCourt" id="selectedCourt">
   <input type="hidden" name="selectedTime" id="selectedTime">
 
-  <br><br>
-
   <table>
     <thead>
       <tr>
         <th>Facility</th>
         <th>Court</th>
-        <th>09-10</th>
-        <th>10-11</th>
-        <th>11-12</th>
-        <th>12-13</th>
-        <th>13-14</th>
-        <th>14-15</th>
-        <th>15-16</th>
-        <th>16-17</th>
-        <th>17-18</th>
-        <th>18-19</th>
-        <th>19-20</th>
-        <th>20-21</th>
+        <th>09:00–10:00</th>
+        <th>10:00–11:00</th>
+        <th>11:00–12:00</th>
+        <th>12:00–13:00</th>
+        <th>13:00–14:00</th>
+        <th>14:00–15:00</th>
+        <th>15:00–16:00</th>
+        <th>16:00–17:00</th>
+        <th>17:00–18:00</th>
+        <th>18:00–19:00</th>
+        <th>19:00–20:00</th>
+        <th>20:00–21:00</th>
       </tr>
     </thead>
 
     <tbody>
       <tr>
-        <td rowspan="4" id="facility-cell">—</td>
+        <td rowspan="4" id="facilityCell">—</td>
         <td>Court 1</td>
-        <td class="slot" data-court="Court 1" data-time="09:00 - 10:00"></td>
-        <td class="slot" data-court="Court 1" data-time="10:00 - 11:00"></td>
-        <td class="slot" data-court="Court 1" data-time="11:00 - 12:00"></td>
-        <td class="slot" data-court="Court 1" data-time="12:00 - 13:00"></td>
-        <td class="slot" data-court="Court 1" data-time="13:00 - 14:00"></td>
-        <td class="slot" data-court="Court 1" data-time="14:00 - 15:00"></td>
-        <td class="slot" data-court="Court 1" data-time="15:00 - 16:00"></td>
-        <td class="slot" data-court="Court 1" data-time="16:00 - 17:00"></td>
-        <td class="slot" data-court="Court 1" data-time="17:00 - 18:00"></td>
-        <td class="slot" data-court="Court 1" data-time="18:00 - 19:00"></td>
-        <td class="slot" data-court="Court 1" data-time="19:00 - 20:00"></td>
-        <td class="slot" data-court="Court 1" data-time="20:00 - 21:00"></td>
+        <td class="slot" data-court="Court 1" data-time="09:00-10:00"></td>
+        <td class="slot" data-court="Court 1" data-time="10:00-11:00"></td>
+        <td class="slot" data-court="Court 1" data-time="11:00-12:00"></td>
+        <td class="slot" data-court="Court 1" data-time="12:00-13:00"></td>
+        <td class="slot" data-court="Court 1" data-time="13:00-14:00"></td>
+        <td class="slot" data-court="Court 1" data-time="14:00-15:00"></td>
+        <td class="slot" data-court="Court 1" data-time="15:00-16:00"></td>
+        <td class="slot" data-court="Court 1" data-time="16:00-17:00"></td>
+        <td class="slot" data-court="Court 1" data-time="17:00-18:00"></td>
+        <td class="slot" data-court="Court 1" data-time="18:00-19:00"></td>
+        <td class="slot" data-court="Court 1" data-time="19:00-20:00"></td>
+        <td class="slot" data-court="Court 1" data-time="20:00-21:00"></td>
       </tr>
 
       <tr>
         <td>Court 2</td>
-        <td class="slot" data-court="Court 2" data-time="09:00 - 10:00"></td>
-        <td class="slot" data-court="Court 2" data-time="10:00 - 11:00"></td>
-        <td class="slot" data-court="Court 2" data-time="11:00 - 12:00"></td>
-        <td class="slot" data-court="Court 2" data-time="12:00 - 13:00"></td>
-        <td class="slot" data-court="Court 2" data-time="13:00 - 14:00"></td>
-        <td class="slot" data-court="Court 2" data-time="14:00 - 15:00"></td>
-        <td class="slot" data-court="Court 2" data-time="15:00 - 16:00"></td>
-        <td class="slot" data-court="Court 2" data-time="16:00 - 17:00"></td>
-        <td class="slot" data-court="Court 2" data-time="17:00 - 18:00"></td>
-        <td class="slot" data-court="Court 2" data-time="18:00 - 19:00"></td>
-        <td class="slot" data-court="Court 2" data-time="19:00 - 20:00"></td>
-        <td class="slot" data-court="Court 2" data-time="20:00 - 21:00"></td>
+        <td class="slot" data-court="Court 2" data-time="09:00-10:00"></td>
+        <td class="slot" data-court="Court 2" data-time="10:00-11:00"></td>
+        <td class="slot" data-court="Court 2" data-time="11:00-12:00"></td>
+        <td class="slot" data-court="Court 2" data-time="12:00-13:00"></td>
+        <td class="slot" data-court="Court 2" data-time="13:00-14:00"></td>
+        <td class="slot" data-court="Court 2" data-time="14:00-15:00"></td>
+        <td class="slot" data-court="Court 2" data-time="15:00-16:00"></td>
+        <td class="slot" data-court="Court 2" data-time="16:00-17:00"></td>
+        <td class="slot" data-court="Court 2" data-time="17:00-18:00"></td>
+        <td class="slot" data-court="Court 2" data-time="18:00-19:00"></td>
+        <td class="slot" data-court="Court 2" data-time="19:00-20:00"></td>
+        <td class="slot" data-court="Court 2" data-time="20:00-21:00"></td>
       </tr>
 
       <tr>
         <td>Court 3</td>
-        <td class="slot" data-court="Court 3" data-time="09:00 - 10:00"></td>
-        <td class="slot" data-court="Court 3" data-time="10:00 - 11:00"></td>
-        <td class="slot" data-court="Court 3" data-time="11:00 - 12:00"></td>
-        <td class="slot" data-court="Court 3" data-time="12:00 - 13:00"></td>
-        <td class="slot" data-court="Court 3" data-time="13:00 - 14:00"></td>
-        <td class="slot" data-court="Court 3" data-time="14:00 - 15:00"></td>
-        <td class="slot" data-court="Court 3" data-time="15:00 - 16:00"></td>
-        <td class="slot" data-court="Court 3" data-time="16:00 - 17:00"></td>
-        <td class="slot" data-court="Court 3" data-time="17:00 - 18:00"></td>
-        <td class="slot" data-court="Court 3" data-time="18:00 - 19:00"></td>
-        <td class="slot" data-court="Court 3" data-time="19:00 - 20:00"></td>
-        <td class="slot" data-court="Court 3" data-time="20:00 - 21:00"></td>
+        <td class="slot" data-court="Court 3" data-time="09:00-10:00"></td>
+        <td class="slot" data-court="Court 3" data-time="10:00-11:00"></td>
+        <td class="slot" data-court="Court 3" data-time="11:00-12:00"></td>
+        <td class="slot" data-court="Court 3" data-time="12:00-13:00"></td>
+        <td class="slot" data-court="Court 3" data-time="13:00-14:00"></td>
+        <td class="slot" data-court="Court 3" data-time="14:00-15:00"></td>
+        <td class="slot" data-court="Court 3" data-time="15:00-16:00"></td>
+        <td class="slot" data-court="Court 3" data-time="16:00-17:00"></td>
+        <td class="slot" data-court="Court 3" data-time="17:00-18:00"></td>
+        <td class="slot" data-court="Court 3" data-time="18:00-19:00"></td>
+        <td class="slot" data-court="Court 3" data-time="19:00-20:00"></td>
+        <td class="slot" data-court="Court 3" data-time="20:00-21:00"></td>
       </tr>
 
       <tr>
         <td>Court 4</td>
-        <td class="slot" data-court="Court 4" data-time="09:00 - 10:00"></td>
-        <td class="slot" data-court="Court 4" data-time="10:00 - 11:00"></td>
-        <td class="slot" data-court="Court 4" data-time="11:00 - 12:00"></td>
-        <td class="slot" data-court="Court 4" data-time="12:00 - 13:00"></td>
-        <td class="slot" data-court="Court 4" data-time="13:00 - 14:00"></td>
-        <td class="slot" data-court="Court 4" data-time="14:00 - 15:00"></td>
-        <td class="slot" data-court="Court 4" data-time="15:00 - 16:00"></td>
-        <td class="slot" data-court="Court 4" data-time="16:00 - 17:00"></td>
-        <td class="slot" data-court="Court 4" data-time="17:00 - 18:00"></td>
-        <td class="slot" data-court="Court 4" data-time="18:00 - 19:00"></td>
-        <td class="slot" data-court="Court 4" data-time="19:00 - 20:00"></td>
-        <td class="slot" data-court="Court 4" data-time="20:00 - 21:00"></td>
+        <td class="slot" data-court="Court 4" data-time="09:00-10:00"></td>
+        <td class="slot" data-court="Court 4" data-time="10:00-11:00"></td>
+        <td class="slot" data-court="Court 4" data-time="11:00-12:00"></td>
+        <td class="slot" data-court="Court 4" data-time="12:00-13:00"></td>
+        <td class="slot" data-court="Court 4" data-time="13:00-14:00"></td>
+        <td class="slot" data-court="Court 4" data-time="14:00-15:00"></td>
+        <td class="slot" data-court="Court 4" data-time="15:00-16:00"></td>
+        <td class="slot" data-court="Court 4" data-time="16:00-17:00"></td>
+        <td class="slot" data-court="Court 4" data-time="17:00-18:00"></td>
+        <td class="slot" data-court="Court 4" data-time="18:00-19:00"></td>
+        <td class="slot" data-court="Court 4" data-time="19:00-20:00"></td>
+        <td class="slot" data-court="Court 4" data-time="20:00-21:00"></td>
       </tr>
     </tbody>
   </table>
 
   <br>
-  <input type="submit" value="Book">
-
+  <button type="submit">Book</button>
 </form>
+
+<br>
+<a href="/userbookings.html"><button>My Bookings</button></a>
+<a href="/dashboard.html"><button>Back to Dashboard</button></a>
+<a href="/logout"><button>Logout</button></a>
 
 <script>
 const facilitySelect = document.getElementById("facility");
 const dateInput = document.getElementById("event-date");
-const facilityCell = document.getElementById("facility-cell");
+const facilityCell = document.getElementById("facilityCell");
 
 const hiddenFacility = document.getElementById("selectedFacility");
 const hiddenDate = document.getElementById("selectedDate");
@@ -157,7 +168,6 @@ const hiddenTime = document.getElementById("selectedTime");
 
 const slots = document.querySelectorAll(".slot");
 
-// Disable slots initially
 slots.forEach(s => s.classList.add("disabled"));
 
 facilitySelect.addEventListener("change", update);
@@ -170,12 +180,13 @@ function update() {
 
   if (!facilitySelect.value || !dateInput.value) return;
 
-  fetch(`/getBookings?facility=${facilitySelect.value}&date=${dateInput.value}`)
+  fetch(`/getBookings?facility=${encodeURIComponent(facilitySelect.value)}&date=${encodeURIComponent(dateInput.value)}`)
     .then(res => res.json())
     .then(booked => {
       slots.forEach(slot => {
         const key = `${slot.dataset.court}-${slot.dataset.time}`;
         slot.classList.remove("selected");
+
         if (booked.includes(key)) {
           slot.classList.add("disabled");
           slot.textContent = "X";
