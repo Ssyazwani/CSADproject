@@ -3,44 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Create Booking</title>
-
   <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #444;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    .slot {
-      cursor: pointer;
-    }
-    .slot.selected {
-      background-color: #4caf50;
-      color: white;
-    }
-    .slot.disabled {
-      background-color: #ccc;
-      color: red;
-      cursor: not-allowed;
-    }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #444; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .slot { cursor: pointer; }
+    .slot.selected { background-color: #4caf50; color: white; }
+    .slot.disabled { background-color: #ccc; color: red; cursor: not-allowed; }
   </style>
 </head>
-
 <body>
 
 <h2>New Booking</h2>
 
 <form action="/createBooking" method="POST">
-
   <label>Facility:</label>
-  <select id="facility" required>
+  <select id="facility" name="selectedFacility" required>
     <option value="">-- Select Facility --</option>
     <option value="Tennis Court">Tennis Court</option>
     <option value="Basketball Court">Basketball Court</option>
@@ -51,11 +29,9 @@
   <br><br>
 
   <label>Date:</label>
-  <input type="date" id="event-date" min="2026-01-01" max="2026-12-31" required>
+  <input type="date" id="event-date" name="selectedDate" min="2026-01-01" max="2026-12-31" required>
 
-  <!-- Hidden fields sent to backend -->
-  <input type="hidden" name="selectedFacility" id="selectedFacility">
-  <input type="hidden" name="selectedDate" id="selectedDate">
+  <!-- Hidden fields for court & time -->
   <input type="hidden" name="selectedCourt" id="selectedCourt">
   <input type="hidden" name="selectedTime" id="selectedTime">
 
@@ -78,7 +54,6 @@
         <th>20:00–21:00</th>
       </tr>
     </thead>
-
     <tbody>
       <tr>
         <td rowspan="4" id="facilityCell">—</td>
@@ -96,7 +71,6 @@
         <td class="slot" data-court="Court 1" data-time="19:00-20:00"></td>
         <td class="slot" data-court="Court 1" data-time="20:00-21:00"></td>
       </tr>
-
       <tr>
         <td>Court 2</td>
         <td class="slot" data-court="Court 2" data-time="09:00-10:00"></td>
@@ -112,7 +86,6 @@
         <td class="slot" data-court="Court 2" data-time="19:00-20:00"></td>
         <td class="slot" data-court="Court 2" data-time="20:00-21:00"></td>
       </tr>
-
       <tr>
         <td>Court 3</td>
         <td class="slot" data-court="Court 3" data-time="09:00-10:00"></td>
@@ -128,7 +101,6 @@
         <td class="slot" data-court="Court 3" data-time="19:00-20:00"></td>
         <td class="slot" data-court="Court 3" data-time="20:00-21:00"></td>
       </tr>
-
       <tr>
         <td>Court 4</td>
         <td class="slot" data-court="Court 4" data-time="09:00-10:00"></td>
@@ -160,19 +132,11 @@
 const facilitySelect = document.getElementById("facility");
 const dateInput = document.getElementById("event-date");
 const slots = document.querySelectorAll(".slot");
-
-const hiddenFacility = document.getElementById("selectedFacility");
-const hiddenDate = document.getElementById("selectedDate");
 const hiddenCourt = document.getElementById("selectedCourt");
 const hiddenTime = document.getElementById("selectedTime");
-
-// Call update when facility or date changes
-window.addEventListener("load", update);
-facilitySelect.addEventListener("change", update);
-dateInput.addEventListener("change", update);
+const facilityCell = document.getElementById("facilityCell");
 
 function update() {
-  hiddenFacility.value = facilitySelect.value;
   facilityCell.textContent = facilitySelect.value || "—";
 
   if (!facilitySelect.value || !dateInput.value) {
@@ -201,7 +165,17 @@ function update() {
     });
 }
 
-// Click handler
+window.addEventListener("load", update);
+facilitySelect.addEventListener("change", update);
+dateInput.addEventListener("change", update);
+
+document.querySelector("form").addEventListener("submit", (e) => {
+  if (!hiddenCourt.value || !hiddenTime.value) {
+    e.preventDefault();
+    alert("Please select a court and time slot!");
+  }
+});
+
 slots.forEach(slot => {
   slot.addEventListener("click", () => {
     if (slot.classList.contains("disabled")) return;
@@ -213,7 +187,6 @@ slots.forEach(slot => {
     hiddenTime.value = slot.dataset.time;
   });
 });
-
 </script>
 
 </body>

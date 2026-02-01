@@ -6,6 +6,8 @@ const bcrypt = require("bcrypt"); // <- import bcrypt
 
 const app = express();
 
+
+
 // Body parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -21,7 +23,7 @@ app.use(session({
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "", // add your MySQL password
+  password: "Forcebook23@", // add your MySQL password
   database: "booking_system"
 });
 
@@ -35,6 +37,9 @@ connection.connect(err => {
 
 // Serve static files
 app.use(express.static("public"));
+
+
+
 
 /* ---------------- Registration ---------------- */
 app.post("/CreateAccount", async (req, res) => {
@@ -57,7 +62,7 @@ app.post("/CreateAccount", async (req, res) => {
       `;
       connection.query(sqlInsert, [email, hashedPassword, name, block, floor, unit], (err, result) => {
         if (err) return res.status(500).send("Insert failed");
-        res.send(`<p>Account created for ${name}. <a href="/login.html">Login here</a></p>`);
+        res.send(`<p>Account created for ${name}. <a href="/LoginPage.html">Login here</a></p>`);
       });
 
     } catch (hashErr) {
@@ -97,94 +102,6 @@ app.post("/LoginAccount", (req, res) => {
   });
 });
 
-
-// const express = require("express");
-// const bodyParser = require("body-parser");
-// const mysql = require("mysql2");
-// const session = require("express-session");
-
-// const app = express();
-
-// // Body parser
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
-
-// // Session setup
-// app.use(session({
-//   secret: "your-secret-key", 
-//   resave: false,
-//   saveUninitialized: false
-// }));
-
-// // MySQL connection
-// const connection = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "", // add in password
-//   database: "booking_system"
-// });
-
-// connection.connect(err => {
-//   if (err) {
-//     console.error("MySQL connection failed:", err.message);
-//     process.exit(1);
-//   }
-//   console.log("MySQL connected");
-// });
-
-// // Serve static files (HTML, JS, CSS)
-// app.use(express.static("public"));
-
-
-
-// // Registration
-// app.post("/CreateAccount", (req, res) => {
-//   const { email, password, name, block, floor, unit } = req.body;
-
-//   // Check if email exists
-//   const sqlCheck = "SELECT * FROM users WHERE email = ?";
-//   connection.query(sqlCheck, [email], (err, rows) => {
-//     if (err) return res.status(500).send("Database error");
-
-//     if (rows.length > 0) return res.send("<p>Email already exists</p>");
-
-//     // Insert new user
-//     const sqlInsert = `
-//       INSERT INTO users (email, password, name, block, floor, unit)
-//       VALUES (?, ?, ?, ?, ?, ?)
-//     `;
-//     connection.query(sqlInsert, [email, password, name, block, floor, unit], (err, result) => {
-//       if (err) return res.status(500).send("Insert failed");
-//       res.send(`<p>Account created for ${name}. <a href="/login.html">Login here</a></p>`);
-//     });
-//   });
-// });
-
-// // Login
-// app.post("/LoginAccount", (req, res) => {
-//   const { email, password } = req.body;
-
-//   const sql = "SELECT id, password, role FROM users WHERE email = ?";
-//   connection.query(sql, [email], (err, results) => {
-//     if (err) return res.status(500).send("Database error");
-
-//     if (results.length === 0 || results[0].password !== password) {
-//       return res.send("<p>Invalid email or password</p>");
-//     }
-
-//    const user = results[0];
-
-// req.session.userId = user.id;
-// req.session.role = user.role;
-
-// if (user.role === "admin") {
-//   res.redirect("/admin.html");
-// } else {
-//   res.redirect("/Dashboard.html");
-// }
-
-//   });
-// });
 
 // Logout
 app.get("/logout", (req, res) => {

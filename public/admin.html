@@ -16,8 +16,6 @@
 <h1>Admin Booking Dashboard</h1>
 
 <br>
-<a href="/userbookings.html"><button>My Bookings</button></a>
-<a href="/dashboard.html"><button>Back to Dashboard</button></a>
 <a href="/logout"><button>Logout</button></a>
 
 <div>
@@ -90,18 +88,23 @@ async function loadBookings() {
   thead.appendChild(slotRow);
 
   // Determine courts
-  const courts = facility === "Tennis Court" ? 4 : 1;
-  for (let c = 1; c <= courts; c++) {
-    const tr = document.createElement("tr");
-    const courtName = facility === "Tennis Court" ? "Court " + c : facility;
-    tr.innerHTML = `<td>${courtName}</td>`;
-    dates.forEach(date => {
-      slotsPerDay.forEach(slot => {
-        tr.innerHTML += `<td class="slot" data-court="${courtName}" data-date="${date}" data-time="${slot}"></td>`;
-      });
+const courts = 4; // 4 courts per facility
+
+for (let c = 1; c <= courts; c++) {
+  const tr = document.createElement("tr");
+  const courtName = "Court " + c;
+  let rowHTML = `<td>${courtName}</td>`; // first column
+
+  dates.forEach(date => {
+    slotsPerDay.forEach(slot => {
+      rowHTML += `<td class="slot" data-court="${courtName}" data-date="${date}" data-time="${slot}"></td>`;
     });
-    tbody.appendChild(tr);
-  }
+  });
+
+  tr.innerHTML = rowHTML;
+  tbody.appendChild(tr);
+}
+
 
 
   bookings.forEach(b => {
@@ -166,7 +169,7 @@ async function loadBookings() {
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify({
               bookingId: slot.dataset.bookingId,
-              service,
+              facility,
               date: newDate,
               court: newCourt,
               timeSlot: newTime
