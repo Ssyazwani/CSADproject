@@ -159,26 +159,29 @@
 <script>
 const facilitySelect = document.getElementById("facility");
 const dateInput = document.getElementById("event-date");
-const facilityCell = document.getElementById("facilityCell");
+const slots = document.querySelectorAll(".slot");
 
 const hiddenFacility = document.getElementById("selectedFacility");
 const hiddenDate = document.getElementById("selectedDate");
 const hiddenCourt = document.getElementById("selectedCourt");
 const hiddenTime = document.getElementById("selectedTime");
 
-const slots = document.querySelectorAll(".slot");
-
-slots.forEach(s => s.classList.add("disabled"));
-
+// Call update when facility or date changes
+window.addEventListener("load", update);
 facilitySelect.addEventListener("change", update);
 dateInput.addEventListener("change", update);
 
 function update() {
   hiddenFacility.value = facilitySelect.value;
   hiddenDate.value = dateInput.value;
-  facilityCell.textContent = facilitySelect.value || "—";
 
-  if (!facilitySelect.value || !dateInput.value) return;
+  if (!facilitySelect.value || !dateInput.value) {
+    slots.forEach(slot => {
+      slot.classList.add("disabled");
+      slot.textContent = "";
+    });
+    return;
+  }
 
   fetch(`/getBookings?facility=${encodeURIComponent(facilitySelect.value)}&date=${encodeURIComponent(dateInput.value)}`)
     .then(res => res.json())
@@ -198,6 +201,7 @@ function update() {
     });
 }
 
+// Click handler
 slots.forEach(slot => {
   slot.addEventListener("click", () => {
     if (slot.classList.contains("disabled")) return;
@@ -209,6 +213,9 @@ slots.forEach(slot => {
     hiddenTime.value = slot.dataset.time;
   });
 });
+
+</script>
+
 </script>
 
 </body>
