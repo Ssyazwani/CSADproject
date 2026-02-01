@@ -173,7 +173,7 @@ dateInput.addEventListener("change", update);
 
 function update() {
   hiddenFacility.value = facilitySelect.value;
-  hiddenDate.value = dateInput.value;
+  facilityCell.textContent = facilitySelect.value || "—";
 
   if (!facilitySelect.value || !dateInput.value) {
     slots.forEach(slot => {
@@ -213,8 +213,6 @@ slots.forEach(slot => {
     hiddenTime.value = slot.dataset.time;
   });
 });
-
-</script>
 
 </script>
 

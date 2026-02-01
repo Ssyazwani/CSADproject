@@ -1,123 +1,180 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Bookings</title>
-  <style>
-    .booking-card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      max-width: 400px;
-      position: relative;
-    }
-    .booking-title {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-    .cancel-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .cancel-btn:hover {
-      background-color: #ff1a1a;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Admin Booking Dashboard</title>
+<style>
+  table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+  th, td { border: 1px solid #444; padding: 5px; text-align: center; }
+  th { background-color: #f2f2f2; font-size: 12px; }
+  .slot { cursor: pointer; min-width: 60px; font-size: 12px; }
+  .slot.booked { background-color: #f44336; color: white; }
+  .slot.selected { background-color: #4caf50; color: white; }
+</style>
 </head>
 <body>
-<h2>My Bookings</h2>
-<div id="bookingList"></div>
+<h1>Admin Booking Dashboard</h1>
 
-<a href="/Book.html">
-  <button>Make a Booking</button>
-</a>
+<div>
+  <label>Facility:
+    <select id="serviceFacility">
+      <option value="">--Select Facility--</option>
+      <option value="Tennis Court">Tennis Court</option>
+      <option value="Basketball Court">Basketball Court</option>
+      <option value="Futsal Court">Futsal Court</option>
+      <option value="Badminton Court">Badminton Court</option>
+    </select>
+  </label>
 
-<br>
+  <label>Start Date: <input type="date" id="startDate"></label>
+  <label><input type="checkbox" id="weeklyView"> Weekly View</label>
+  <button onclick="loadBookings()">Load Bookings</button>
+</div>
+
+<table id="bookingTable">
+  <thead></thead>
+  <tbody></tbody>
+</table>
 
 <script>
-function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
+const slotsPerDay = [
+  "09:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00",
+  "13:00-14:00","14:00-15:00","15:00-16:00","16:00-17:00",
+  "17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00"
+];
+
+// Get 7 dates starting from a date
+function getWeekDates(start) {
+  const dates = [];
+  const d = new Date(start);
+  for (let i = 0; i < 7; i++) {
+    const dd = new Date(d);
+    dd.setDate(d.getDate() + i);
+    dates.push(dd.toISOString().split("T")[0]);
+  }
+  return dates;
 }
 
-// Load bookings
-function loadBookings() {
-  fetch("/api/user-bookings")
-    .then(res => res.json())
-    .then(bookings => {
-      const container = document.getElementById("bookingList");
-      container.innerHTML = "";
+async function loadBookings() {
+  const facility = document.getElementById("serviceFacility").value; // ← fixed ID
+  const startDate = document.getElementById("startDate").value;
+  const weekly = document.getElementById("weeklyView").checked;
 
-      if (bookings.length === 0) {
-        container.innerHTML = "<p>No bookings yet</p>";
-        return;
-      }
+  if (!facility || !startDate) return alert("Select facility and start date");
 
-      bookings.forEach(b => {
-        const card = document.createElement("div");
-        card.className = "booking-card";
+  let dates = weekly ? getWeekDates(startDate) : [startDate];
+  const endDate = dates[dates.length - 1];
 
-        card.innerHTML = `
-          <div class="booking-title">${b.facility}</div>
-          <div>${formatDate(b.date)}</div>
-          <div>${b.court}</div>
-          <div>${b.timeSlot}</div>
-          <button class="cancel-btn" onclick="cancelBooking(${b.id})">Cancel</button>
-        `;
+  const res = await fetch(`/api/admin-bookings?startDate=${startDate}&endDate=${endDate}`);
+  const bookings = await res.json();
 
-        container.appendChild(card);
+  const table = document.getElementById("bookingTable");
+  const thead = table.querySelector("thead");
+  const tbody = table.querySelector("tbody");
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
+
+  // Build table header
+  const dateRow = document.createElement("tr");
+  dateRow.innerHTML = "<th rowspan='2'>Court / Time</th>";
+  dates.forEach(date => dateRow.innerHTML += `<th colspan='${slotsPerDay.length}'>${date}</th>`);
+  thead.appendChild(dateRow);
+
+  const slotRow = document.createElement("tr");
+  dates.forEach(_ => slotsPerDay.forEach(slot => slotRow.innerHTML += `<th>${slot}</th>`));
+  thead.appendChild(slotRow);
+
+  // Determine courts
+  const courts = facility === "Tennis Court" ? 4 : 1;
+  for (let c = 1; c <= courts; c++) {
+    const tr = document.createElement("tr");
+    const courtName = facility === "Tennis Court" ? "Court " + c : facility;
+    tr.innerHTML = `<td>${courtName}</td>`;
+    dates.forEach(date => {
+      slotsPerDay.forEach(slot => {
+        tr.innerHTML += `<td class="slot" data-court="${courtName}" data-date="${date}" data-time="${slot}"></td>`;
       });
     });
-}
+    tbody.appendChild(tr);
+  }
 
-// Cancel a booking
-function cancelBooking(bookingId) {
-  if (!confirm("Are you sure you want to cancel this booking?")) return;
+  // Fill bookings
+  bookings.forEach(b => {
+    if (b.facility !== facility) return;
+    const bookingDate = b.date.split("T")[0] || b.date.split(" ")[0];
+    tbody.querySelectorAll(".slot").forEach(cell => {
+      if (cell.dataset.court === b.court &&
+          cell.dataset.date === bookingDate &&
+          cell.dataset.time === b.timeSlot) {
+        cell.classList.add("booked");
+        cell.textContent = b.email;
+        cell.dataset.bookingId = b.id;
+      }
+    });
+  });
 
-  fetch("/api/cancel-booking", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookingId })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
-      alert(data.message);
-      loadBookings(); // Refresh list after cancellation
-    } else {
-      alert(data.message || "Failed to cancel booking");
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Error cancelling booking");
+  // Click handler for admin
+  tbody.querySelectorAll(".slot").forEach(slot => {
+    slot.onclick = async () => {
+      if (!slot.dataset.bookingId) {
+        // Create booking
+        const email = prompt("User email?");
+        if (!email) return;
+        const resUsers = await fetch("/api/users");
+        const users = await resUsers.json();
+        const user = users.find(u => u.email === email);
+        if (!user) return alert("User not found");
+
+        const response = await fetch("/api/admin-create-booking", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            userId: user.id,
+            facility,
+            date: slot.dataset.date,
+            court: slot.dataset.court,
+            timeSlot: slot.dataset.time
+          })
+        });
+        const data = await response.json();
+        alert(data.message);
+        loadBookings();
+      } else {
+        // Edit or delete
+        const action = prompt("Type 'edit' or 'delete'");
+        if (action === "delete") {
+          const response = await fetch("/api/admin-delete-booking", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({bookingId: slot.dataset.bookingId})
+          });
+          const data = await response.json();
+          alert(data.message);
+          loadBookings();
+        } else if (action === "edit") {
+          const newDate = prompt("New date:", slot.dataset.date);
+          const newTime = prompt("New time slot:", slot.dataset.time);
+          const newCourt = prompt("New court:", slot.dataset.court);
+
+          const response = await fetch("/api/admin-update-booking", {
+            method:"POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({
+              bookingId: slot.dataset.bookingId,
+              service,
+              date: newDate,
+              court: newCourt,
+              timeSlot: newTime
+            })
+          });
+          const data = await response.json();
+          alert(data.message);
+          loadBookings();
+        }
+      }
+    };
   });
 }
-
-// Load bookings on page load
-window.onload = loadBookings;
 </script>
-
-<a href="/dashboard.html">
-<button>Back to the Dashboard</button>
-</a>
-
-<br><br>
-
-
-
-
 </body>
 </html>
