@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Bookings</title>
+  <style>
+    .booking-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      max-width: 400px;
+      position: relative;
+    }
+    .booking-title {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .cancel-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cancel-btn:hover {
+      background-color: #ff1a1a;
+    }
+  </style>
+</head>
+<body>
+<h2>My Bookings</h2>
+<div id="bookingList"></div>
+
+<a href="/book.html">
+  <button>Make a Booking</button>
+</a>
+
+<br>
+
+<script>
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+// Load bookings
+function loadBookings() {
+  fetch("/api/user-bookings")
+    .then(res => res.json())
+    .then(bookings => {
+      const container = document.getElementById("bookingList");
+      container.innerHTML = "";
+
+      if (bookings.length === 0) {
+        container.innerHTML = "<p>No bookings yet</p>";
+        return;
+      }
+
+      bookings.forEach(b => {
+        const card = document.createElement("div");
+        card.className = "booking-card";
+
+        card.innerHTML = `
+          <div class="booking-title">${b.service}</div>
+          <div>${formatDate(b.date)}</div>
+          <div>${b.court}</div>
+          <div>${b.timeSlot}</div>
+          <button class="cancel-btn" onclick="cancelBooking(${b.id})">Cancel</button>
+        `;
+
+        container.appendChild(card);
+      });
+    });
+}
+
+// Cancel a booking
+function cancelBooking(bookingId) {
+  if (!confirm("Are you sure you want to cancel this booking?")) return;
+
+  fetch("/api/cancel-booking", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookingId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert(data.message);
+      loadBookings(); // Refresh list after cancellation
+    } else {
+      alert(data.message || "Failed to cancel booking");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Error cancelling booking");
+  });
+}
+
+// Load bookings on page load
+window.onload = loadBookings;
+</script>
+
+<a href="/dashboard.html">
+<button>Back to the Dashboard</button>
+</a>
+
+<br><br>
+
+
+
+
+</body>
+</html>

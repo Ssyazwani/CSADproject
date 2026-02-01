@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+</head>
+<body>
+    <form action="/CreateAccount" method="POST">
+    Email: <input type="email" name="email" required>
+    <br>
+    Password:<input type="password" name="password" required >
+    <br>
+    Name: <input type="text" name="name" required >
+    <br>
+    Block: <input type="text" name ="block" required>
+    Floor: <input type = "number" name ="floor" required>
+    Unit: <input type = "number" name ="unit" required>
+    <input type = "submit" value = "Create Account">
+    </form>
+
+    <p>Already have an account? <a href="/LoginPage.html">Login here</a></p>
+</body>
+</html>
