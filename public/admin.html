@@ -15,6 +15,11 @@
 <body>
 <h1>Admin Booking Dashboard</h1>
 
+<br>
+<a href="/userbookings.html"><button>My Bookings</button></a>
+<a href="/dashboard.html"><button>Back to Dashboard</button></a>
+<a href="/logout"><button>Logout</button></a>
+
 <div>
   <label>Facility:
     <select id="serviceFacility">
@@ -98,7 +103,7 @@ async function loadBookings() {
     tbody.appendChild(tr);
   }
 
-  // Fill bookings
+
   bookings.forEach(b => {
     if (b.facility !== facility) return;
     const bookingDate = b.date.split("T")[0] || b.date.split(" ")[0];
