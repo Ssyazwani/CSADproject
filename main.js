@@ -175,7 +175,7 @@ app.post("/api/cancel-booking", (req, res) => {
   });
 });
 
-// ----------------- Admin Middleware -----------------
+// Admin
 function isAdmin(req, res, next) {
   if (!req.session.userId) return res.redirect("/LoginPage.html");
 
