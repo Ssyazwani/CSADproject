@@ -129,6 +129,12 @@
 <a href="/logout"><button>Logout</button></a>
 
 <script>
+  
+  function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 const facilitySelect = document.getElementById("facility");
 const dateInput = document.getElementById("event-date");
 const slots = document.querySelectorAll(".slot");

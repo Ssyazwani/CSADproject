@@ -10,12 +10,12 @@
   .slot { cursor: pointer; min-width: 60px; font-size: 12px; }
   .slot.booked { background-color: #f44336; color: white; }
   .slot.selected { background-color: #4caf50; color: white; }
+  .date-row td { background-color: #eee; font-weight: bold; text-align: left; }
 </style>
 </head>
 <body>
 <h1>Admin Booking Dashboard</h1>
 
-<br>
 <a href="/logout"><button>Logout</button></a>
 
 <div>
@@ -30,7 +30,7 @@
   </label>
 
   <label>Start Date: <input type="date" id="startDate"></label>
-  <label><input type="checkbox" id="weeklyView"> Weekly View</label>
+  <label><input type="checkbox" id="weeklyView" checked> Weekly View</label>
   <button onclick="loadBookings()">Load Bookings</button>
 </div>
 
@@ -40,13 +40,21 @@
 </table>
 
 <script>
+
+  function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 const slotsPerDay = [
   "09:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00",
   "13:00-14:00","14:00-15:00","15:00-16:00","16:00-17:00",
   "17:00-18:00","18:00-19:00","19:00-20:00","20:00-21:00"
 ];
 
-// Get 7 dates starting from a date
+const courts = 4;
+
+// for weekly view
 function getWeekDates(start) {
   const dates = [];
   const d = new Date(start);
@@ -59,16 +67,13 @@ function getWeekDates(start) {
 }
 
 async function loadBookings() {
-  const facility = document.getElementById("serviceFacility").value; // ← fixed ID
+  const facility = document.getElementById("serviceFacility").value;
   const startDate = document.getElementById("startDate").value;
   const weekly = document.getElementById("weeklyView").checked;
 
-  if (!facility || !startDate) return alert("Select facility and start date");
+  const dates = weekly ? getWeekDates(startDate) : [startDate];
 
-  let dates = weekly ? getWeekDates(startDate) : [startDate];
-  const endDate = dates[dates.length - 1];
-
-  const res = await fetch(`/api/admin-bookings?startDate=${startDate}&endDate=${endDate}`);
+  const res = await fetch(`/api/admin-bookings?startDate=${dates[0]}&endDate=${dates[dates.length-1]}`);
   const bookings = await res.json();
 
   const table = document.getElementById("bookingTable");
@@ -77,55 +82,47 @@ async function loadBookings() {
   thead.innerHTML = "";
   tbody.innerHTML = "";
 
-  // Build table header
-  const dateRow = document.createElement("tr");
-  dateRow.innerHTML = "<th rowspan='2'>Court / Time</th>";
-  dates.forEach(date => dateRow.innerHTML += `<th colspan='${slotsPerDay.length}'>${date}</th>`);
-  thead.appendChild(dateRow);
+  // Table header: Court / Timeslot
+  const headerRow = document.createElement("tr");
+  headerRow.innerHTML = "<th>Court</th>";
+  slotsPerDay.forEach(slot => headerRow.innerHTML += `<th>${slot}</th>`);
+  thead.appendChild(headerRow);
 
-  const slotRow = document.createElement("tr");
-  dates.forEach(_ => slotsPerDay.forEach(slot => slotRow.innerHTML += `<th>${slot}</th>`));
-  thead.appendChild(slotRow);
-
-  // Determine courts
-const courts = 4; // 4 courts per facility
-
-for (let c = 1; c <= courts; c++) {
-  const tr = document.createElement("tr");
-  const courtName = "Court " + c;
-  let rowHTML = `<td>${courtName}</td>`; // first column
-
+  // Table body: Dates stacked, courts per date
   dates.forEach(date => {
-    slotsPerDay.forEach(slot => {
-      rowHTML += `<td class="slot" data-court="${courtName}" data-date="${date}" data-time="${slot}"></td>`;
-    });
+    const dateRow = document.createElement("tr");
+    dateRow.classList.add("date-row");
+    dateRow.innerHTML = `<td colspan="${slotsPerDay.length+1}">${date}</td>`;
+    tbody.appendChild(dateRow);
+
+    // Court rows
+    for (let c = 1; c <= courts; c++) {
+      const tr = document.createElement("tr");
+      let rowHTML = `<td>Court ${c}</td>`;
+      slotsPerDay.forEach(slot => {
+        rowHTML += `<td class="slot" data-date="${date}" data-court="Court ${c}" data-time="${slot}"></td>`;
+      });
+      tr.innerHTML = rowHTML;
+      tbody.appendChild(tr);
+    }
   });
 
-  tr.innerHTML = rowHTML;
-  tbody.appendChild(tr);
-}
-
-
-
+  // Mark booked slots
   bookings.forEach(b => {
     if (b.facility !== facility) return;
-    const bookingDate = b.date.split("T")[0] || b.date.split(" ")[0];
-    tbody.querySelectorAll(".slot").forEach(cell => {
-      if (cell.dataset.court === b.court &&
-          cell.dataset.date === bookingDate &&
-          cell.dataset.time === b.timeSlot) {
-        cell.classList.add("booked");
-        cell.textContent = b.email;
-        cell.dataset.bookingId = b.id;
-      }
-    });
+    const bookingDate = b.date.split("T")[0];
+    const cell = tbody.querySelector(`.slot[data-date="${bookingDate}"][data-court="${b.court}"][data-time="${b.timeSlot}"]`);
+    if (cell) {
+      cell.classList.add("booked");
+      cell.textContent = b.email;
+      cell.dataset.bookingId = b.id;
+    }
   });
 
-  // Click handler for admin
+  // Slot click handlers
   tbody.querySelectorAll(".slot").forEach(slot => {
     slot.onclick = async () => {
       if (!slot.dataset.bookingId) {
-        // Create booking
         const email = prompt("User email?");
         if (!email) return;
         const resUsers = await fetch("/api/users");
@@ -148,7 +145,6 @@ for (let c = 1; c <= courts; c++) {
         alert(data.message);
         loadBookings();
       } else {
-        // Edit or delete
         const action = prompt("Type 'edit' or 'delete'");
         if (action === "delete") {
           const response = await fetch("/api/admin-delete-booking", {
@@ -163,7 +159,6 @@ for (let c = 1; c <= courts; c++) {
           const newDate = prompt("New date:", slot.dataset.date);
           const newTime = prompt("New time slot:", slot.dataset.time);
           const newCourt = prompt("New court:", slot.dataset.court);
-
           const response = await fetch("/api/admin-update-booking", {
             method:"POST",
             headers: {"Content-Type":"application/json"},
@@ -183,6 +178,9 @@ for (let c = 1; c <= courts; c++) {
     };
   });
 }
+
+// Auto-load on page ready
+window.addEventListener("DOMContentLoaded", loadBookings);
 </script>
 </body>
 </html>

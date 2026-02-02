@@ -2,10 +2,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const session = require("express-session");
-const bcrypt = require("bcrypt"); // <- import bcrypt
+const bcrypt = require("bcrypt");
 
 const app = express();
-
 
 
 // Body parser
@@ -23,7 +22,7 @@ app.use(session({
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Forcebook23@", // add your MySQL password
+  password: "Forcebook23@", // .env
   database: "booking_system"
 });
 
