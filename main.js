@@ -22,7 +22,7 @@ app.use(session({
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Forcebook23@", // .env
+  password: "", // .env
   database: "booking_system"
 });
 
