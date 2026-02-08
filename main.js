@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 
 const app = express();
 
-
 // Body parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -34,13 +33,11 @@ connection.connect(err => {
   console.log("MySQL connected");
 });
 
-// Serve static files
 app.use(express.static("public"));
 
 
 
 
-/* ---------------- Registration ---------------- */
 app.post("/CreateAccount", async (req, res) => {
   const { email, password, name, block, floor, unit } = req.body;
 
@@ -51,7 +48,7 @@ app.post("/CreateAccount", async (req, res) => {
 
     if (rows.length > 0) return res.send("<p>Email already exists</p>");
 
-    // Hash the password before inserting
+ 
     try {
       const hashedPassword = await bcrypt.hash(password, 10); // saltRounds = 10
 
@@ -71,7 +68,7 @@ app.post("/CreateAccount", async (req, res) => {
   });
 });
 
-/* ---------------- Login ---------------- */
+
 app.post("/LoginAccount", (req, res) => {
   const { email, password } = req.body;
 
@@ -102,7 +99,6 @@ app.post("/LoginAccount", (req, res) => {
 });
 
 
-// Logout
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/LoginPage.html");

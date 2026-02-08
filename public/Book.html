@@ -4,12 +4,59 @@
   <meta charset="UTF-8">
   <title>Create Booking</title>
   <style>
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #444; padding: 8px; text-align: center; }
-    th { background-color: #f2f2f2; }
-    .slot { cursor: pointer; }
-    .slot.selected { background-color: #4caf50; color: white; }
-    .slot.disabled { background-color: #ccc; color: red; cursor: not-allowed; }
+
+   body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #b1cce8;
+    }
+
+    table { 
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px; 
+
+    }
+
+    th, td { 
+      border: 1px solid #444;
+      padding: 8px;
+      text-align: center;
+      background-color: #f2f2f2;;
+
+     }
+
+    th { 
+      background-color: #f2f2f2;
+     }
+
+    .slot { 
+      cursor: pointer;
+      background-color: #f2f2f2;
+
+     }
+
+    .slot.selected { 
+      background-color: #4caf50; color: white;
+     }
+
+    .slot.disabled {
+       background-color: #ccc; color: red; cursor: not-allowed;
+       }
+   
+    header {
+      display: flex;
+      gap: 50px;
+      padding: 10px;
+      margin: 3px 0;
+      margin-right: 50px 0;
+      box-sizing: border-box;
+      background-color: #cfecf7;
+    }
+   
+    header a {
+            margin-right: 30px;   /* space between links */
+            font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -31,7 +78,7 @@
   <label>Date:</label>
   <input type="date" id="event-date" name="selectedDate" min="2026-01-01" max="2026-12-31" required>
 
-  <!-- Hidden fields for court & time -->
+  
   <input type="hidden" name="selectedCourt" id="selectedCourt">
   <input type="hidden" name="selectedTime" id="selectedTime">
 

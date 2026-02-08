@@ -4,13 +4,67 @@
 <meta charset="UTF-8">
 <title>Admin Booking Dashboard</title>
 <style>
-  table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-  th, td { border: 1px solid #444; padding: 5px; text-align: center; }
-  th { background-color: #f2f2f2; font-size: 12px; }
-  .slot { cursor: pointer; min-width: 60px; font-size: 12px; }
-  .slot.booked { background-color: #f44336; color: white; }
-  .slot.selected { background-color: #4caf50; color: white; }
-  .date-row td { background-color: #eee; font-weight: bold; text-align: left; }
+
+  body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #b1cce8;
+  }
+
+  table {
+     border-collapse: collapse;
+     width: 100%;
+     margin-top: 20px; 
+    }
+
+  th, td {
+     border: 1px solid #444;
+     padding: 5px; 
+     text-align: center; 
+     background-color: #f2f2f2;
+  }
+
+  th {
+     background-color: #f2f2f2;
+     font-size: 12px; 
+     background-color: #7dafce;
+  }
+  .slot { 
+    cursor: pointer;
+    min-width: 60px;
+    font-size: 12px; 
+  }
+  
+  .slot.booked { 
+    background-color: #f44336;
+    color: white; 
+  }
+
+  .slot.selected { 
+    background-color: #4caf50;
+    color: white; 
+  }
+
+  .date-row td { 
+    background-color: #99b0d7;
+    font-weight: bold;
+    text-align: left; 
+  }
+
+ 
+    header {
+      display: flex;
+      gap: 50px;
+      padding: 10px;
+      margin: 3px 0;
+      margin-right: 50px 0;
+      box-sizing: border-box;
+      background-color: #cfecf7;
+    }
+  
+    header a {
+            margin-right: 30px;   /* space between links */
+            font-weight: bold;
+    }
 </style>
 </head>
 <body>
@@ -66,6 +120,15 @@ function getWeekDates(start) {
   return dates;
 }
 
+function formatDateDDMMYYYY(dateStr) {
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, '0');   // 08
+  const month = String(d.getMonth() + 1).padStart(2, '0'); // 02
+  const year = d.getFullYear(); // 2026
+  return `${day}-${month}-${year}`;
+}
+
+
 async function loadBookings() {
   const facility = document.getElementById("serviceFacility").value;
   const startDate = document.getElementById("startDate").value;
@@ -82,20 +145,19 @@ async function loadBookings() {
   thead.innerHTML = "";
   tbody.innerHTML = "";
 
-  // Table header: Court / Timeslot
   const headerRow = document.createElement("tr");
   headerRow.innerHTML = "<th>Court</th>";
   slotsPerDay.forEach(slot => headerRow.innerHTML += `<th>${slot}</th>`);
   thead.appendChild(headerRow);
 
-  // Table body: Dates stacked, courts per date
+  
   dates.forEach(date => {
     const dateRow = document.createElement("tr");
     dateRow.classList.add("date-row");
-    dateRow.innerHTML = `<td colspan="${slotsPerDay.length+1}">${date}</td>`;
+    dateRow.innerHTML = `<td colspan="${slotsPerDay.length+1}">${formatDateDDMMYYYY(date)}</td>`;
+
     tbody.appendChild(dateRow);
 
-    // Court rows
     for (let c = 1; c <= courts; c++) {
       const tr = document.createElement("tr");
       let rowHTML = `<td>Court ${c}</td>`;
@@ -107,7 +169,7 @@ async function loadBookings() {
     }
   });
 
-  // Mark booked slots
+ 
   bookings.forEach(b => {
     if (b.facility !== facility) return;
     const bookingDate = b.date.split("T")[0];
@@ -119,7 +181,7 @@ async function loadBookings() {
     }
   });
 
-  // Slot click handlers
+ 
   tbody.querySelectorAll(".slot").forEach(slot => {
     slot.onclick = async () => {
       if (!slot.dataset.bookingId) {
@@ -179,7 +241,7 @@ async function loadBookings() {
   });
 }
 
-// Auto-load on page ready
+
 window.addEventListener("DOMContentLoaded", loadBookings);
 </script>
 </body>

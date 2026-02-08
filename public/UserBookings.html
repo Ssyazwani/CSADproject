@@ -3,6 +3,40 @@
 <head>
   <title>My Bookings</title>
   <style>
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color:#b1cce8;
+      color: #3C4142;
+    }
+
+    h1 {
+      text-align: left;
+      margin-bottom: 40px;
+    }
+    h2 {
+      text-align: left;
+      margin-bottom: 40px;
+    }
+
+    /*For Header*/
+    header {
+      display: flex;
+      gap: 50px;
+      padding: 10px;
+      margin: 3px 0;
+      margin-right: 50px 0;
+      box-sizing: border-box;
+      background-color: #cfecf7;
+    }
+    /*For Header hyperlinks*/
+    header a {
+            margin-right: 30px;   /* space between links */
+            font-weight: bold;
+    }
+
     .booking-card {
       border: 1px solid #ddd;
       border-radius: 8px;
@@ -10,12 +44,15 @@
       margin-bottom: 12px;
       max-width: 400px;
       position: relative;
+      background-color: #cfecf7;
     }
+    
     .booking-title {
       font-weight: bold;
       font-size: 18px;
       margin-bottom: 6px;
     }
+
     .cancel-btn {
       position: absolute;
       top: 12px;
@@ -27,9 +64,11 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
     .cancel-btn:hover {
       background-color: #ff1a1a;
     }
+
   </style>
 </head>
 <body>
@@ -42,8 +81,6 @@
 
 <br>
 
-<a href="/logout"><button>Logout</button></a>
-
 <script>
 function formatDate(dateStr) {
   const d = new Date(dateStr);
@@ -54,7 +91,7 @@ function formatDate(dateStr) {
   });
 }
 
-// Load bookings
+
 function loadBookings() {
   fetch("/api/user-bookings")
     .then(res => res.json())
@@ -84,7 +121,7 @@ function loadBookings() {
     });
 }
 
-// Cancel a booking
+
 function cancelBooking(bookingId) {
   if (!confirm("Are you sure you want to cancel this booking?")) return;
 
@@ -97,7 +134,7 @@ function cancelBooking(bookingId) {
   .then(data => {
     if (data.success) {
       alert(data.message);
-      loadBookings(); // Refresh list after cancellation
+      loadBookings(); 
     } else {
       alert(data.message || "Failed to cancel booking");
     }
@@ -108,7 +145,7 @@ function cancelBooking(bookingId) {
   });
 }
 
-// Load bookings on page load
+
 window.onload = loadBookings;
 </script>
 
